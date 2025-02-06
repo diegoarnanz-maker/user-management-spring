@@ -44,7 +44,7 @@ public class UsuarioRestcontroller {
     }
 
     // Read()
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{idUsuario}")
     public ResponseEntity<?> buscarUsuarioPorId(@PathVariable Long idUsuario) {
         Optional<?> usuario = usuarioService.read(idUsuario);
         if (usuario.isPresent()) {
@@ -74,7 +74,7 @@ public class UsuarioRestcontroller {
     }
 
     // Update()
-    @PutMapping("/updateuser/{id}")
+    @PutMapping("/updateuser/{idUsuario}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable Long idUsuario, @RequestBody Usuario usuario) {
         try {
             usuario.setIdUsuario(idUsuario);
@@ -93,7 +93,7 @@ public class UsuarioRestcontroller {
     }
 
     // Delete()
-    @DeleteMapping("/deleteuser/{id}")
+    @DeleteMapping("/deleteuser/{idUsuario}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long idUsuario) {
         try {
             // Esta Presente?
