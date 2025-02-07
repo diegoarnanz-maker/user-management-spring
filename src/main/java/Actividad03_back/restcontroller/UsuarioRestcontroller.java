@@ -30,10 +30,10 @@ public class UsuarioRestcontroller {
     private IUsuarioService usuarioService;
 
     // FindAll() incluida paginacion
-    @GetMapping
+    @GetMapping({"/","/home"})
     public ResponseEntity<?> listarUsuarios(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int perPage) {
+            @RequestParam(defaultValue = "9") int perPage) {
         try {
             UsuarioDto response = usuarioService.findAllPaginated(page, perPage);
             return ResponseEntity.ok(response);
@@ -102,6 +102,7 @@ public class UsuarioRestcontroller {
                 return ResponseEntity.status(404).body(
                         Collections.singletonMap("error", "No se ha encontrado el usuario con id " + idUsuario));
             }
+            usuarioService.delete(idUsuario);
             return ResponseEntity.status(200)
                     .body(Collections.singletonMap("success", "Usuario eliminado correctamente"));
         } catch (Exception e) {

@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
+
+
 import Actividad03_back.modelo.dto.UsuarioDto;
 import Actividad03_back.modelo.entities.Usuario;
 import Actividad03_back.repository.IUsuarioRepository;
@@ -30,20 +33,23 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public UsuarioDto findAllPaginated(int page, int perPage) {
-        try {
-            Page<Usuario> usuariosPage = usuarioRepository.findAll(PageRequest.of(page, perPage));
+        Pageable pageable = PageRequest.of(page - 1, perPage);
+        Page<Usuario> usuariosPage = usuarioRepository.findAll(pageable);
 
-            return UsuarioDto.builder()
-                    .page(page)
-                    .per_page(perPage)
-                    .total((int) usuariosPage.getTotalElements())
-                    .total_pages(usuariosPage.getTotalPages())
-                    .results(usuariosPage.getContent())
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error al intentar recuperar los usuarios con paginación");
+        int totalUsuarios = (int) usuariosPage.getTotalElements();
+        int totalPaginas = (int) Math.ceil((double) totalUsuarios / perPage);
+
+        if (page > totalPaginas) {
+            page = totalPaginas;
         }
+
+        return UsuarioDto.builder()
+                .page(page)
+                .per_page(perPage)
+                .total(totalUsuarios)
+                .total_pages(totalPaginas)
+                .results(usuariosPage.getContent())
+                .build();
     }
 
     @Override
@@ -59,8 +65,8 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public Optional<Usuario> read(Long id) {
-        try{
-            if(id == null){
+        try {
+            if (id == null) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo");
             }
             return usuarioRepository.findById(id);
@@ -72,11 +78,11 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public Usuario update(Usuario entity) {
-        try{
-            if(entity == null){
+        try {
+            if (entity == null) {
                 throw new IllegalArgumentException("El usuario no puede ser nulo");
             }
-            if(entity.getIdUsuario() == null || !usuarioRepository.existsById(entity.getIdUsuario())){
+            if (entity.getIdUsuario() == null || !usuarioRepository.existsById(entity.getIdUsuario())) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo o no existe");
             }
             return usuarioRepository.save(entity);
@@ -88,11 +94,11 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public void delete(Long id) {
-        try{
-            if(id == null){
+        try {
+            if (id == null) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo");
             }
-            if(!usuarioRepository.existsById(id)){
+            if (!usuarioRepository.existsById(id)) {
                 throw new IllegalArgumentException("El id del usuario no existe");
             }
             usuarioRepository.deleteById(id);
