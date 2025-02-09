@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import Actividad03_back.modelo.dto.UsuarioDto;
@@ -13,7 +16,7 @@ import Actividad03_back.modelo.entities.Usuario;
 import Actividad03_back.repository.IUsuarioRepository;
 
 @Service
-public class UsuarioServiceImplMy8 implements IUsuarioService {
+public class UsuarioServiceImplMy8 implements IUsuarioService, UserDetailsService {
 
     @Autowired
     private IUsuarioRepository usuarioRepository;
@@ -59,8 +62,8 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public Optional<Usuario> read(Long id) {
-        try{
-            if(id == null){
+        try {
+            if (id == null) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo");
             }
             return usuarioRepository.findById(id);
@@ -72,11 +75,11 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public Usuario update(Usuario entity) {
-        try{
-            if(entity == null){
+        try {
+            if (entity == null) {
                 throw new IllegalArgumentException("El usuario no puede ser nulo");
             }
-            if(entity.getIdUsuario() == null || !usuarioRepository.existsById(entity.getIdUsuario())){
+            if (entity.getIdUsuario() == null || !usuarioRepository.existsById(entity.getIdUsuario())) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo o no existe");
             }
             return usuarioRepository.save(entity);
@@ -88,17 +91,48 @@ public class UsuarioServiceImplMy8 implements IUsuarioService {
 
     @Override
     public void delete(Long id) {
-        try{
-            if(id == null){
+        try {
+            if (id == null) {
                 throw new IllegalArgumentException("El id del usuario no puede ser nulo");
             }
-            if(!usuarioRepository.existsById(id)){
+            if (!usuarioRepository.existsById(id)) {
                 throw new IllegalArgumentException("El id del usuario no existe");
             }
             usuarioRepository.deleteById(id);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error al intentar eliminar el usuario de la base de datos");
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacío");
+        }
+
+        Usuario usuario = usuarioRepository.findByUsername(username);
+        if (usuario == null) {
+            throw new UsernameNotFoundException("No se encontró el usuario con nombre: " + username);
+        }
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(usuario.getUsername())
+                .password(usuario.getPassword())
+                .authorities(usuario.getAuthorities())
+                .build();
+    }
+
+    @Override
+    public Optional<Usuario> findByUsername(String username) {
+        try {
+            if (username == null || username.isEmpty()) {
+                throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacío");
+            }
+            return Optional.ofNullable(usuarioRepository.findByUsername(username));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al intentar recuperar el usuario de la base de datos");
         }
     }
 
