@@ -29,7 +29,7 @@ public class UsuarioRestcontroller {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<?> listarUsuarios(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int perPage) {
+            @RequestParam(defaultValue = "9") int perPage) {
         try {
             UsuarioDto response = usuarioService.findAllPaginated(page, perPage);
             return ResponseEntity.ok(response);
