@@ -20,6 +20,7 @@ import Actividad03_back.modelo.entities.Usuario;
 import Actividad03_back.modelo.services.IUsuarioService;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/auth")
 public class AuthRestcontroller {
 
