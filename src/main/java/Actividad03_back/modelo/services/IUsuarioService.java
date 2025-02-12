@@ -9,4 +9,6 @@ public interface IUsuarioService extends IGenericoCRUD<Usuario, Long> {
     UsuarioDto findAllPaginated(int page, int perPage);
 
     Optional<Usuario> findByUsername(String username);
+
+    Optional<Usuario> findByEmail(String email);
 }

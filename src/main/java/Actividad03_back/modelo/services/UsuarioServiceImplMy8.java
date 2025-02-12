@@ -136,4 +136,17 @@ public class UsuarioServiceImplMy8 implements IUsuarioService, UserDetailsServic
         }
     }
 
+    @Override
+    public Optional<Usuario> findByEmail(String email) {
+        try{
+            if (email == null || email.isEmpty()) {
+                throw new IllegalArgumentException("El email no puede ser nulo o vacío");
+            }
+            return Optional.ofNullable(usuarioRepository.findByEmail(email));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al intentar recuperar el usuario de la base de datos");
+        }
+    }
+
 }

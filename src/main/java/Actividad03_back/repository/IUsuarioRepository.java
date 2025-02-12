@@ -7,4 +7,6 @@ import Actividad03_back.modelo.entities.Usuario;
 public interface IUsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Usuario findByUsername(String username);
+
+    Usuario findByEmail(String email);
 }

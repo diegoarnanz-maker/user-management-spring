@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Actividad03_back.modelo.dto.UsuarioDto;
+import Actividad03_back.modelo.entities.Usuario;
 import Actividad03_back.modelo.services.IUsuarioService;
 
 @RestController
@@ -50,4 +51,18 @@ public class UsuarioRestcontroller {
                     .body(Collections.singletonMap("error", "No se ha encontrado el usuario con id " + idUsuario));
         }
     }
+
+    @GetMapping("/findByUsername/{username}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ResponseEntity<?> getUsuarioByUsername(@PathVariable String username) {
+        Optional<Usuario> usuario = usuarioService.findByUsername(username);
+
+        if (usuario.isPresent()) {
+            return ResponseEntity.ok(usuario.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", "Usuario no encontrado"));
+        }
+    }
+
 }
